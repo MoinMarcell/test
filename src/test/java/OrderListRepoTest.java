@@ -1,9 +1,11 @@
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class OrderListRepoTest {
 
@@ -13,7 +15,7 @@ class OrderListRepoTest {
         OrderListRepo repo = new OrderListRepo();
 
         Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product));
+        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
         repo.addOrder(newOrder);
 
         //WHEN
@@ -22,7 +24,7 @@ class OrderListRepoTest {
         //THEN
         List<Order> expected = new ArrayList<>();
         Product product1 = new Product("1", "Apfel");
-        expected.add(new Order("1", List.of(product1)));
+        expected.add(new Order("1", List.of(product1), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone())));
 
         assertEquals(actual, expected);
     }
@@ -33,15 +35,15 @@ class OrderListRepoTest {
         OrderListRepo repo = new OrderListRepo();
 
         Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product));
+        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
         repo.addOrder(newOrder);
 
         //WHEN
-        Order actual = repo.getOrderById("1");
+        Order actual = repo.getOrderById("1").orElseThrow();
 
         //THEN
         Product product1 = new Product("1", "Apfel");
-        Order expected = new Order("1", List.of(product1));
+        Order expected = new Order("1", List.of(product1), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
 
         assertEquals(actual, expected);
     }
@@ -51,16 +53,16 @@ class OrderListRepoTest {
         //GIVEN
         OrderListRepo repo = new OrderListRepo();
         Product product = new Product("1", "Apfel");
-        Order newOrder = new Order("1", List.of(product));
+        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
 
         //WHEN
         Order actual = repo.addOrder(newOrder);
 
         //THEN
         Product product1 = new Product("1", "Apfel");
-        Order expected = new Order("1", List.of(product1));
+        Order expected = new Order("1", List.of(product1), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
         assertEquals(actual, expected);
-        assertEquals(repo.getOrderById("1"), expected);
+        assertEquals(repo.getOrderById("1").get(), expected);
     }
 
     @Test
@@ -68,10 +70,14 @@ class OrderListRepoTest {
         //GIVEN
         OrderListRepo repo = new OrderListRepo();
 
+        Product product = new Product("1", "Apfel");
+        Order newOrder = new Order("1", List.of(product), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
+        repo.addOrder(newOrder);
+
         //WHEN
         repo.removeOrder("1");
 
         //THEN
-        assertNull(repo.getOrderById("1"));
+        assertNull(repo.getOrderById("1").orElse(null));
     }
 }

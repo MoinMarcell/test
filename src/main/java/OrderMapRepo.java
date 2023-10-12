@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class OrderMapRepo implements OrderRepo{
     private Map<String, Order> orders = new HashMap<>();
@@ -12,14 +9,28 @@ public class OrderMapRepo implements OrderRepo{
     }
 
     @Override
-    public Order getOrderById(String id) {
-        return orders.get(id);
+    public Optional<Order> getOrderById(String id) {
+        return Optional.of(orders.get(id));
     }
 
     @Override
     public Order addOrder(Order newOrder) {
         orders.put(newOrder.id(), newOrder);
         return newOrder;
+    }
+
+    @Override
+    public Order updateOrderStatus(String orderId, OrderStatus orderStatus) {
+        Order orderToUpdate = orders.get(orderId);
+        if (orderToUpdate == null) {
+            System.out.println("Order mit der Id: " + orderId + " konnte nicht gefunden werden!");
+            return null;
+        }
+
+        Order updatedOrder = orderToUpdate.withOrderStatus(orderStatus);
+        orders.remove(orderId);
+        orders.put(orderId, updatedOrder);
+        return updatedOrder;
     }
 
     @Override

@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Test;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,7 +17,7 @@ class ShopServiceTest {
         Order actual = shopService.addOrder(productsIds);
 
         //THEN
-        Order expected = new Order("-1", List.of(new Product("1", "Apfel")));
+        Order expected = new Order("-1", List.of(new Product("1", "Apfel")), OrderStatus.PROCESSING, ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZonedDateTime.now().getZone()));
         assertEquals(expected.products(), actual.products());
         assertNotNull(expected.id());
     }
@@ -27,10 +28,7 @@ class ShopServiceTest {
         ShopService shopService = new ShopService();
         List<String> productsIds = List.of("1", "2");
 
-        //WHEN
-        Order actual = shopService.addOrder(productsIds);
-
         //THEN
-        assertNull(actual);
+        assertThrows(ProductNotFoundException.class, () -> shopService.addOrder(productsIds));
     }
 }
