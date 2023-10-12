@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class OrderListRepo implements OrderRepo {
 	private List<Order> orders = new ArrayList<>();
@@ -39,5 +37,22 @@ public class OrderListRepo implements OrderRepo {
 				return;
 			}
 		}
+	}
+
+	@Override
+	public Map<OrderStatus, Order> getOldestOrderPerStatus() {
+		Map<OrderStatus, Order> oldestOrderPerStatus = new HashMap<>();
+		for (Order order : orders) {
+			OrderStatus orderStatus = order.orderStatus();
+			if (oldestOrderPerStatus.containsKey(orderStatus)) {
+				Order oldestOrder = oldestOrderPerStatus.get(orderStatus);
+				if (order.orderDate().isBefore(oldestOrder.orderDate())) {
+					oldestOrderPerStatus.put(orderStatus, order);
+				}
+			} else {
+				oldestOrderPerStatus.put(orderStatus, order);
+			}
+		}
+		return oldestOrderPerStatus;
 	}
 }

@@ -1,11 +1,15 @@
+import lombok.RequiredArgsConstructor;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
+@RequiredArgsConstructor
 public class ShopService {
-	private ProductRepo productRepo = new ProductRepo();
-	private OrderRepo orderRepo = new OrderMapRepo();
+	private final ProductRepo productRepo;
+	private final OrderRepo orderRepo;
+	private final IdService idService;
 
 	public Order addOrder(List<String> productIds) {
 		List<Product> products = new ArrayList<>();
@@ -18,7 +22,7 @@ public class ShopService {
 			products.add(productToOrder);
 		}
 
-		Order newOrder = new Order(UUID.randomUUID().toString(), products, OrderStatus.PROCESSING, ZonedDateTime.now());
+		Order newOrder = new Order(idService.generateId(), products, OrderStatus.PROCESSING, ZonedDateTime.now());
 
 		return orderRepo.addOrder(newOrder);
 	}
@@ -26,4 +30,11 @@ public class ShopService {
 	public Order updateOrder(String orderId, OrderStatus orderStatus) {
 		return orderRepo.updateOrderStatus(orderId, orderStatus);
     }
+
+	/*
+	Schreibt eine Methode getOldestOrderPerStatus, die eine Map mit dem ältesten Order-Objekt pro Status zurückgibt.
+	 */
+	public Map<OrderStatus, Order> getOldestOrderPerStatus() {
+		return orderRepo.getOldestOrderPerStatus();
+	}
 }

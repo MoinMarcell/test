@@ -37,4 +37,21 @@ public class OrderMapRepo implements OrderRepo{
     public void removeOrder(String id) {
         orders.remove(id);
     }
+
+	@Override
+	public Map<OrderStatus, Order> getOldestOrderPerStatus() {
+		Map<OrderStatus, Order> oldestOrderPerStatus = new HashMap<>();
+		for (Order order : orders.values()) {
+			OrderStatus orderStatus = order.orderStatus();
+			if (oldestOrderPerStatus.containsKey(orderStatus)) {
+				Order oldestOrder = oldestOrderPerStatus.get(orderStatus);
+				if (order.orderDate().isBefore(oldestOrder.orderDate())) {
+					oldestOrderPerStatus.put(orderStatus, order);
+				}
+			} else {
+				oldestOrderPerStatus.put(orderStatus, order);
+			}
+		}
+		return oldestOrderPerStatus;
+	}
 }
